@@ -6,7 +6,6 @@ if [ "${HELM_DEBUG:-}" = "1" ] || [ "${HELM_DEBUG:-}" = "true" ] || [ -n "${HELM
     set -x
 fi
 
-
 usage() {
     cat <<EOF
 Masks kubernetes Secrets data in helm dry-run
@@ -22,7 +21,6 @@ Usage:
 
 EOF
 }
-
 
 declare -a POSITIONAL_ARGS=()
 while [[ $# -gt 0 ]]; do
@@ -49,28 +47,24 @@ fi
 
 HELM_BIN="${HELM_SECRETS_HELM_PATH:-"${HELM_BIN:-helm}"}"
 
-#echo "Input : $@"
 
 if [[ $1 == "upgrade" ]] ||
-   [[ $1 == "install" ]] && [[ "$@" == *"--dry-run"* ]] ; then
-        if [[ $# -lt 4 ]]; then
-                echo "Missing arguments!"
-                echo "---"
-                usage
-                exit 1
-        else
-                echo  "Valid inputs : $1"
-        fi
-elif [[ $1 == "template" ]] || [[ "$@" == *"--dry-run"* ]]; then
-        echo  "Valid inputs : $1"
-else
+    [[ $1 == "install" ]] && [[ "$@" == *"--dry-run"* ]]; then
+    if [[ $# -lt 4 ]]; then
         echo "Missing arguments!"
         echo "---"
         usage
         exit 1
+    else
+        $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq -M '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "(MASKED)"'
+    fi
+elif [[ $1 == "template" ]] || [[ "$@" == *"--dry-run"* ]]; then
+    $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq -M '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "(MASKED)"'
+else
+    echo "Missing arguments!"
+    echo "---"
+    usage
+    exit 1
 fi
-
-#$HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq -M '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "(MASKED)"'
-
 
 exit 0
