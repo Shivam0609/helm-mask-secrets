@@ -2,6 +2,11 @@
 
 set -eo pipefail
 
+if [ "${HELM_DEBUG:-}" = "1" ] || [ "${HELM_DEBUG:-}" = "true" ] || [ -n "${HELM_SECRETS_DEBUG+x}" ]; then
+    set -x
+fi
+
+
 usage() {
     cat <<EOF
 Masks kubernetes Secrets data in helm dry-run
@@ -13,27 +18,20 @@ Usage:
   helm mask-secrets upgrade --dry-run [flags]                               Upgrade a helm chart
   helm mask-secrets install release chart --dry-run [flags]                 Install a helm chart
   helm mask-secrets upgrade --install release chart --dry-run [flags]       Install/Upgrade a helm chart
-  helm mask-secrets template chart [flags]                                  Template a helm chart      
+  helm mask-secrets template chart [flags]                                  Template a helm chart
 
-Flags:
-  -n, --namespace string                 Username for authenticated repo (assumes anonymous access if unspecified)
-  -p, --password string                 Password for authenticated repo (prompts if unspecified and -u specified)
-
-Username and Password for authenticated repo can be supplied using NEXUS_USERNAME and NEXUS_PASSWORD environment variables.
 EOF
 }
 
-# declare NEXUS_USERNAME
-# declare NEXUS_PASSWORD
 
 declare -a POSITIONAL_ARGS=()
 while [[ $# -gt 0 ]]; do
     case "$1" in
-    -h | --help)
+    -h | --help | help)
         usage
         exit 0
         ;;
-    
+
     *)
         POSITIONAL_ARGS+=("$1")
         ;;
@@ -49,77 +47,30 @@ if [[ $# -lt 2 ]]; then
     exit 1
 fi
 
-# indent() { sed 's/^/  /'; }
+HELM_BIN="${HELM_SECRETS_HELM_PATH:-"${HELM_BIN:-helm}"}"
 
-# declare HELM3_VERSION="$(helm version --client --short | grep "v3\.")"
+#echo "Input : $@"
 
-# declare REPO=$1
-# declare REPO_URL="$(helm repo list | grep "^$REPO" | awk '{print $2}')/"
+if [[ $1 == "upgrade" ]] ||
+   [[ $1 == "install" ]] && [[ "$@" == *"--dry-run"* ]] ; then
+        if [[ $# -lt 4 ]]; then
+                echo "Missing arguments!"
+                echo "---"
+                usage
+                exit 1
+        else
+                echo  "Valid inputs : $1"
+        fi
+elif [[ $1 == "template" ]] || [[ "$@" == *"--dry-run"* ]]; then
+        echo  "Valid inputs : $1"
+else
+        echo "Missing arguments!"
+        echo "---"
+        usage
+        exit 1
+fi
 
-# if [[ -n $HELM3_VERSION ]]; then
-# declare REPO_AUTH_FILE="$HOME/.config/helm/auth.$REPO"
-# else
-# declare REPO_AUTH_FILE="$(helm home)/repository/auth.$REPO"
-# fi
+#$HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq -M '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "(MASKED)"'
 
-# if [[ $REPO_URL == / ]]; then
-#     echo "Invalid repo specified!  Must specify one of these repos..."
-#     helm repo list
-#     echo "---"
-#     usage
-#     exit 1
-# fi
-
-# declare CMD
-# declare AUTH
-# declare CHART
-
-# case "$2" in
-# login)
-#     if [[ -z "${NEXUS_USERNAME:-}" ]]; then
-#         read -p "Username: " NEXUS_USERNAME
-#     fi
-#     if [[ -z "${NEXUS_PASSWORD:-}" ]]; then
-#         read -s -p "Password: " NEXUS_PASSWORD
-#         echo
-#     fi
-#     echo "$NEXUS_USERNAME:$NEXUS_PASSWORD" >"$REPO_AUTH_FILE"
-#     ;;
-# logout)
-#     rm -f "$REPO_AUTH_FILE"
-#     ;;
-# *)
-#     CMD=push
-#     CHART=$2
-
-#     if [[ -z "${NEXUS_USERNAME:-}" ]] || [[ -z "${NEXUS_PASSWORD:-}" ]]; then
-#         if [[ -f "$REPO_AUTH_FILE" ]]; then
-#             echo "Using cached login creds..."
-#             AUTH="$(cat $REPO_AUTH_FILE)"
-#         else
-#             if [[ -z "${NEXUS_USERNAME:-}" ]]; then
-#                 read -p "Username: " NEXUS_USERNAME
-#             fi
-#             if [[ -z "${NEXUS_PASSWORD:-}" ]]; then
-#                 read -s -p "Password: " NEXUS_PASSWORD
-#                 echo
-#             fi
-#             AUTH="$NEXUS_USERNAME:$NEXUS_PASSWORD"
-#         fi
-#     else
-#         AUTH="$NEXUS_USERNAME:$NEXUS_PASSWORD"
-#     fi
-
-#     if [[ -d "$CHART" ]]; then
-#         CHART_PACKAGE="$(helm package "$CHART" | cut -d":" -f2 | tr -d '[:space:]')"
-#     else
-#         CHART_PACKAGE="$CHART"
-#     fi
-
-#     echo "Pushing $CHART to repo $REPO_URL..."
-#     curl --silent --fail --show-error -u "$AUTH" "$REPO_URL" --upload-file "$CHART_PACKAGE"
-#     echo "Done"
-#     ;;
-# esac
 
 exit 0
