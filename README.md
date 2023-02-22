@@ -8,16 +8,15 @@ encoded text in helm dry-run.
   * `helm plugin install --version main https://github.com/Shivam0609/helm-mask-secrets.git`
   * `helm mask-secrets --help`
 
-## Updates
-
-  * `cd $HELM_HOME/plugins/mask-secrets`
-  * `git pull`
-
 ## Usage
 
   * `helm mask-secrets upgrade --dry-run [flags]`
   * `helm mask-secrets upgrade --install release chart --dry-run [flags]`
   * `helm mask-secrets template chart [flags]`
+
+## Uninstall
+  * `helm plugin uninstall mask-secrets`
+
 
 Additional help available `helm mask-secrets --help`
 
