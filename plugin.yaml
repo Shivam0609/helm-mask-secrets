@@ -1,0 +1,15 @@
+name: "mask-secrets"
+version: "0.0.1"
+usage: "mask secrets data in helm dry-run"
+description: |-
+  This plugin masks secret data for Helm charts in the rendered manifest.
+  See `helm mask --help` for usage.
+ignoreFlags: false
+command: '$HELM_PLUGIN_DIR/mask.sh'
+platformCommand:
+  - os: linux
+    arch: i386
+    command: "$HELM_PLUGIN_DIR/mask.sh"
+  - os: linux
+    arch: amd64
+    command: "$HELM_PLUGIN_DIR/mask.sh"
