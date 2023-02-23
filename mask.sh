@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+set -euf
 
 if [ "${HELM_DEBUG:-}" = "1" ] || [ "${HELM_DEBUG:-}" = "true" ] || [ -n "${HELM_SECRETS_DEBUG+x}" ]; then
     set -x
@@ -22,49 +22,67 @@ Usage:
 EOF
 }
 
-declare -a POSITIONAL_ARGS=()
-while [[ $# -gt 0 ]]; do
-    case "$1" in
-    -h | --help | help)
-        usage
-        exit 0
-        ;;
+prerequite() {
+    cat <<EOF
+Below tools are pre-requisites for using this helm plugin:
+    * yq - https://github.com/mikefarah/yq/releases/
+    * awk
 
-    *)
-        POSITIONAL_ARGS+=("$1")
-        ;;
-    esac
-    shift
-done
-[[ ${#POSITIONAL_ARGS[@]} -ne 0 ]] && set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+EOF
+}
 
-if [[ $# -lt 2 ]]; then
-    echo "Missing arguments!"
+
+if [[ -z $(which awk) ]] || [[ -z $(which yq) ]]; then
+    echo "Missing pre-requisites!"
     echo "---"
-    usage
+    prerequite
     exit 1
-fi
+else
+    declare -a POSITIONAL_ARGS=()
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+        -h | --help | help)
+            usage
+            exit 0
+            ;;
 
-HELM_BIN="${HELM_SECRETS_HELM_PATH:-"${HELM_BIN:-helm}"}"
+        *)
+            POSITIONAL_ARGS+=("$1")
+            ;;
+        esac
+        shift
+    done
+    [[ ${#POSITIONAL_ARGS[@]} -ne 0 ]] && set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
-
-if [[ $1 == "upgrade" ]] ||
-    [[ $1 == "install" ]] && [[ "$@" == *"--dry-run"* ]]; then
-    if [[ $# -lt 4 ]]; then
+    if [[ $# -lt 2 ]]; then
         echo "Missing arguments!"
         echo "---"
         usage
         exit 1
-    else
-        $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq -M '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "(MASKED)"'
     fi
-elif [[ $1 == "template" ]] || [[ "$@" == *"--dry-run"* ]]; then
-    $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq -M '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "(MASKED)"'
-else
-    echo "Missing arguments!"
-    echo "---"
-    usage
-    exit 1
+
+    HELM_BIN="${HELM_SECRETS_HELM_PATH:-"${HELM_BIN:-helm}"}"
+
+
+    if [[ $1 == "upgrade" ]] ||
+        [[ $1 == "install" ]] && [[ "$@" == *"--dry-run"* ]]; then
+        if [[ $# -lt 4 ]]; then
+            echo "Missing arguments!"
+            echo "---"
+            usage
+            exit 1
+        else
+            $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq -M '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "(MASKED)"'
+        fi
+    elif [[ $1 == "template" ]] || [[ "$@" == *"--dry-run"* ]]; then
+        $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq -M '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "(MASKED)"'
+    else
+        echo "Missing arguments!"
+        echo "---"
+        usage
+        exit 1
+    fi
+
 fi
 
 exit 0

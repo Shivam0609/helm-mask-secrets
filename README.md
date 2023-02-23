@@ -3,6 +3,11 @@
 A Helm plugin that provides ability to mask Secrets data which otherwise is visible as base64
 encoded text in helm dry-run.
 
+# Getting Started
+
+## Pre-requisites
+  * yq - https://github.com/mikefarah/yq/releases/
+  * awk
 ## Installation
 
   * `helm plugin install --version main https://github.com/Shivam0609/helm-mask-secrets.git`
