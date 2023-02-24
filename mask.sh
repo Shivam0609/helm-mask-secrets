@@ -23,10 +23,10 @@ This plugin provides ability to mask Secrets data which otherwise is visible
 as base64 encoded text in helm dry-run.
 
 🧾 Usage:
-    ⎈ helm mask-secrets upgrade [RELEASE] [CHART] --dry-run [flags]                               Upgrade a helm chart
+    ⎈ helm mask-secrets upgrade [RELEASE] [CHART] --dry-run [flags]                 Upgrade a helm chart
     ⎈ helm mask-secrets install [RELEASE] [CHART] --dry-run [flags]                 Install a helm chart
     ⎈ helm mask-secrets upgrade --install [RELEASE] [CHART] --dry-run [flags]       Install/Upgrade a helm chart
-    ⎈ helm mask-secrets template [CHART] [flags]                                  Template a helm chart
+    ⎈ helm mask-secrets template [CHART] [flags]                                    Template a helm chart
 
 EOF
 }
