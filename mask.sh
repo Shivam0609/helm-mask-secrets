@@ -34,7 +34,7 @@ EOF
 prerequisite() {
     cat <<EOF
 
-🚀 Below tools are pre-requisites for using this helm plugin:
+🚀 Below tools are prerequisites for using this helm plugin:
     ⎈ yq - https://github.com/mikefarah/yq/releases/
     ⎈ awk/gawk
     ⎈ helm3 - https://helm.sh/docs/intro/install/
@@ -57,7 +57,7 @@ missing_prereq() {
 }
 
 mask() {
-    $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq -M '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "**********"'
+    $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "**********"'
 }
 
 main() {

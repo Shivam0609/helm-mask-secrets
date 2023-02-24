@@ -11,7 +11,7 @@ Which otherwise is visible as base64 encoded text in helm dry-run.
 
 # Getting Started 🚀
 
-## Pre-requisites
+## Prerequisites
 
   * `yq` - https://github.com/mikefarah/yq/releases/
   * `awk/gawk`
