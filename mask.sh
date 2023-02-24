@@ -31,7 +31,7 @@ as base64 encoded text in helm dry-run.
 EOF
 }
 
-prerequite() {
+prerequisite() {
     cat <<EOF
 
 🚀 Below tools are pre-requisites for using this helm plugin:
@@ -52,7 +52,7 @@ missing_args() {
 missing_prereq() {
    echo -e ${RED}"Missing pre-requisites!"${NC}
    echo -e ${BLUE}"---"${NC}
-   prerequite
+   prerequisite
    exit 1
 }
 
