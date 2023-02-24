@@ -24,7 +24,7 @@ EOF
 
 prerequite() {
     cat <<EOF
-Below tools are pre-requisites for using this helm plugin:
+Below tools are pre-requisites for using this helm plugin, Please install them before running:
     * yq - https://github.com/mikefarah/yq/releases/
     * awk
 
