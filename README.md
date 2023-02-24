@@ -20,6 +20,7 @@ Which otherwise is visible as base64 encoded text in helm dry-run.
 ## Installation
 
   * `helm plugin install --version main https://github.com/Shivam0609/helm-mask-secrets.git`
+  * `chmod +x /root/.local/share/helm/plugins/helm-mask-secrets.git/mask.sh`
   * `helm mask-secrets --help`
 
 ## Usage
