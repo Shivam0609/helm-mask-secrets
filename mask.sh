@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#set -euf
+set -eo pipefail
 
 if [ "${HELM_DEBUG:-}" = "1" ] || [ "${HELM_DEBUG:-}" = "true" ] || [ -n "${HELM_SECRETS_DEBUG+x}" ]; then
     set -x
@@ -56,8 +56,17 @@ missing_prereq() {
    exit 1
 }
 
+status_check() {
+    return_value=$?
+
+    if [[ $return_value != 0 ]];then
+        #echo -e ${RED}"Helm Upgrade/Install failed !!"${NC}
+        exit $return_value
+    fi
+}
+
 mask() {
-    $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "**********"'
+    $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "**********"' && status_check || status_check 
 }
 
 main() {
