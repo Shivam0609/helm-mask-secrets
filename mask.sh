@@ -3,7 +3,7 @@
 set -eo pipefail
 
 if [ "${HELM_DEBUG:-}" = "1" ] || [ "${HELM_DEBUG:-}" = "true" ] || [ -n "${HELM_SECRETS_DEBUG+x}" ]; then
-    set -xeo pipefail
+    set -eox pipefail
 fi
 
 HELM_BIN="${HELM_SECRETS_HELM_PATH:-"${HELM_BIN:-helm}"}"
@@ -58,9 +58,8 @@ missing_prereq() {
 
 status_check() {
     return_value=$?
-
     if [[ $return_value != 0 ]];then
-        #echo -e ${RED}"Helm Upgrade/Install failed !!"${NC}
+        echo -e ${RED}"Helm Upgrade/Install failed !!"${NC}
         exit $return_value
     fi
 }
