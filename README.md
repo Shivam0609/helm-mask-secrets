@@ -6,8 +6,8 @@
 
 ## About
 
-A helm plugin that provides ability to mask Secrets data,
-Which otherwise is visible as base64 encoded text in helm dry-run.
+A helm plugin that provides ability to mask secrets data,
+which otherwise is visible as base64 encoded text in helm dry-run.
 
 # Getting Started 🚀
 
@@ -37,7 +37,7 @@ Which otherwise is visible as base64 encoded text in helm dry-run.
 
 Additional help available `helm mask --help`
 
-## Getting help
+## Need help
 
 Looking to contribute to our code but need some help?
 
