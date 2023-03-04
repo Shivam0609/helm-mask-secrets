@@ -5,4 +5,9 @@
 ## v0.0.2 - 2023-02-27
 
 * [FIX] Plugin fails if prerequisites missing [#3](https://github.com/Shivam0609/helm-mask-secrets/issues/3).
-* [IMPROVEMENT] Add 
+* [IMPROVE] Add Colored Usage text and errors
+
+## v0.0.3 - 2023-03-04
+
+* [FIX] Plugin supresses helm upgrade failures [#6](https://github.com/Shivam0609/helm-mask-secrets/issues/6)
+* [REFACTOR] Documentation
