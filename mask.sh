@@ -9,11 +9,11 @@ fi
 HELM_BIN="${HELM_SECRETS_HELM_PATH:-"${HELM_BIN:-helm}"}"
 
 # Color codes
-NC='\e[3m'
-RED='\e[3;31m'
-BLUE='\e[3;34m'
-GREEN='\e[3;32m'
-YELLOW='\e[3;33m'
+NC='\e[0m'
+RED='\e[0;31m'
+BLUE='\e[0;34m'
+GREEN='\e[0;32m'
+YELLOW='\e[0;33m'
 
 usage() {
     cat <<EOF
