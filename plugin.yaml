@@ -1,5 +1,5 @@
 name: "mask"
-version: "0.0.1"
+version: "0.0.3"
 usage: "mask secrets data in helm dry-run"
 description: |-
   This plugin masks secret data for Helm charts in the rendered manifest.

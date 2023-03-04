@@ -3,7 +3,6 @@
 
 # Mask - Helm Plugin
 
-
 ## About
 
 A helm plugin that provides ability to mask secrets data,

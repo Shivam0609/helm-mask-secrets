@@ -10,4 +10,4 @@
 ## v0.0.3 - 2023-03-04
 
 * [FIX] Plugin supresses helm upgrade failures [#6](https://github.com/Shivam0609/helm-mask-secrets/issues/6)
-* [REFACTOR] Documentation
+* [REFACTOR] README.md
