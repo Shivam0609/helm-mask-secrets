@@ -23,10 +23,10 @@ This plugin provides ability to mask Secrets data which otherwise is visible
 as base64 encoded text in helm dry-run.
 
 🧾 Usage:
-    ⎈ helm mask-secrets upgrade [RELEASE] [CHART] --dry-run [flags]                 Upgrade a helm chart
-    ⎈ helm mask-secrets install [RELEASE] [CHART] --dry-run [flags]                 Install a helm chart
-    ⎈ helm mask-secrets upgrade --install [RELEASE] [CHART] --dry-run [flags]       Install/Upgrade a helm chart
-    ⎈ helm mask-secrets template [CHART] [flags]                                    Template a helm chart
+    ⎈ helm mask upgrade [RELEASE] [CHART] --dry-run [flags]                 Upgrade a helm chart
+    ⎈ helm mask install [RELEASE] [CHART] --dry-run [flags]                 Install a helm chart
+    ⎈ helm mask upgrade --install [RELEASE] [CHART] --dry-run [flags]       Install/Upgrade a helm chart
+    ⎈ helm mask template [CHART] [flags]                                    Template a helm chart
 
 EOF
 }
@@ -65,7 +65,7 @@ status_check() {
 }
 
 mask() {
-    $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "**********"' && status_check || status_check 
+    $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "(MASKED)"' && status_check || status_check 
 }
 
 main() {
