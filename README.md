@@ -1,7 +1,7 @@
 
 ![banner](resources/banner.png)
 
-# Mask Secrets - Helm Plugin
+# Mask - Helm Plugin
 
 
 ## About

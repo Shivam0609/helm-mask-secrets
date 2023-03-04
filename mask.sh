@@ -59,7 +59,6 @@ missing_prereq() {
 status_check() {
     return_value=$?
     if [[ $return_value != 0 ]];then
-        echo -e ${RED}"Helm Upgrade/Install failed !!"${NC}
         exit $return_value
     fi
 }
