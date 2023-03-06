@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
-#set -euf
+set -eo pipefail
 
 if [ "${HELM_DEBUG:-}" = "1" ] || [ "${HELM_DEBUG:-}" = "true" ] || [ -n "${HELM_SECRETS_DEBUG+x}" ]; then
-    set -x
+    set -eox pipefail
 fi
 
 HELM_BIN="${HELM_SECRETS_HELM_PATH:-"${HELM_BIN:-helm}"}"
 
 # Color codes
-NC='\e[3m'
-RED='\e[3;31m'
-BLUE='\e[3;34m'
-GREEN='\e[3;32m'
-YELLOW='\e[3;33m'
+NC='\e[0m'
+RED='\e[0;31m'
+BLUE='\e[0;34m'
+GREEN='\e[0;32m'
+YELLOW='\e[0;33m'
 
 usage() {
     cat <<EOF
@@ -23,10 +23,10 @@ This plugin provides ability to mask Secrets data which otherwise is visible
 as base64 encoded text in helm dry-run.
 
 🧾 Usage:
-    ⎈ helm mask-secrets upgrade [RELEASE] [CHART] --dry-run [flags]                 Upgrade a helm chart
-    ⎈ helm mask-secrets install [RELEASE] [CHART] --dry-run [flags]                 Install a helm chart
-    ⎈ helm mask-secrets upgrade --install [RELEASE] [CHART] --dry-run [flags]       Install/Upgrade a helm chart
-    ⎈ helm mask-secrets template [CHART] [flags]                                    Template a helm chart
+    ⎈ helm mask upgrade [RELEASE] [CHART] --dry-run [flags]                 Upgrade a helm chart
+    ⎈ helm mask install [RELEASE] [CHART] --dry-run [flags]                 Install a helm chart
+    ⎈ helm mask upgrade --install [RELEASE] [CHART] --dry-run [flags]       Install/Upgrade a helm chart
+    ⎈ helm mask template [CHART] [flags]                                    Template a helm chart
 
 EOF
 }
@@ -56,8 +56,15 @@ missing_prereq() {
    exit 1
 }
 
+status_check() {
+    return_value=$?
+    if [[ $return_value != 0 ]];then
+        exit $return_value
+    fi
+}
+
 mask() {
-    $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "**********"'
+    $HELM_BIN $@ | sed -n '/NOTES:/q;p' | awk '/---/,EOF { print $0 }' | yq '( select(.kind == "Secret" and .data|length > 0 or .stringData|length > 0) | (.data[]?, .stringData[]?) ) = "(MASKED)"' && status_check || status_check 
 }
 
 main() {
