@@ -1,13 +1,12 @@
 
 ![banner](resources/banner.png)
 
-# Mask-Secrets - Helm Plugin
-
+# Mask - Helm Plugin
 
 ## About
 
-Mask-Secrets helm plugin provides ability to mask Secrets data,
-Which otherwise is visible as base64 encoded text in helm dry-run.
+A helm plugin that provides ability to mask secrets data,
+which otherwise is visible as base64 encoded text in helm dry-run.
 
 # Getting Started 🚀
 
@@ -21,23 +20,23 @@ Which otherwise is visible as base64 encoded text in helm dry-run.
 
   * `helm plugin install --version main https://github.com/Shivam0609/helm-mask-secrets.git`
   * `chmod +x /root/.local/share/helm/plugins/helm-mask-secrets.git/mask.sh`
-  * `helm mask-secrets --help`
+  * `helm mask --help`
 
 ## Usage
 
-  * `helm mask-secrets upgrade [RELEASE] [CHART] --dry-run [flags]`
-  * `helm mask-secrets install [RELEASE] [CHART] --dry-run [flags]`
-  * `helm mask-secrets upgrade --install [RELEASE] [CHART] --dry-run [flags]`
-  * `helm mask-secrets template [CHART] [flags]`
+  * `helm mask upgrade [RELEASE] [CHART] --dry-run [flags]`
+  * `helm mask install [RELEASE] [CHART] --dry-run [flags]`
+  * `helm mask upgrade --install [RELEASE] [CHART] --dry-run [flags]`
+  * `helm mask template [CHART] [flags]`
 
 ## Uninstall
 
-  * `helm plugin uninstall mask-secrets`
+  * `helm plugin uninstall mask`
 
 
-Additional help available `helm mask-secrets --help`
+Additional help available `helm mask --help`
 
-## Getting help
+## Need help
 
 Looking to contribute to our code but need some help?
 
